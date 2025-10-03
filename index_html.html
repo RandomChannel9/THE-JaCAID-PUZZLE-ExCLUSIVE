@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Crossword Puzzle</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🇯🇵 Japanese Crossword Puzzle Generator</h1>
+        
+        <div class="input-section">
+            <h2>Add Vocabulary Words</h2>
+            <div class="vocab-input">
+                <input type="text" id="japanese" placeholder="Japanese word (e.g., ねこ)">
+                <input type="text" id="english" placeholder="English meaning (e.g., cat)">
+                <button class="add-btn" onclick="addVocab()">Add Word</button>
+            </div>
+            
+            <div class="vocab-list" id="vocabList"></div>
+            
+            <button onclick="generatePuzzle()" style="width: 100%; margin-top: 20px;">Generate Puzzle</button>
+        </div>
+        
+        <div class="puzzle-container" id="puzzleContainer">
+            <h2>Complete the Crossword Puzzle</h2>
+            <div class="puzzle-grid" id="puzzleGrid"></div>
+            
+            <div class="clues">
+                <div>
+                    <h3>Across (→)</h3>
+                    <div id="acrossClues"></div>
+                </div>
+                <div>
+                    <h3>Down (↓)</h3>
+                    <div id="downClues"></div>
+                </div>
+            </div>
+            
+            <button class="check-btn" onclick="checkAnswers()">Check Answers</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
