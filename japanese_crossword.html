@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Crossword Puzzle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .vocab-input {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.1s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .add-btn {
+            background: #28a745;
+        }
+        
+        .add-btn:hover {
+            background: #218838;
+        }
+        
+        .vocab-list {
+            margin-top: 20px;
+        }
+        
+        .vocab-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .delete-btn {
+            padding: 6px 12px;
+            background: #dc3545;
+            font-size: 14px;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        .puzzle-container {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .puzzle-grid {
+            display: grid;
+            gap: 2px;
+            margin: 20px auto;
+            background: #333;
+            padding: 2px;
+            width: fit-content;
+        }
+        
+        .cell {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .cell.black {
+            background: #333;
+        }
+        
+        .cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 0;
+        }
+        
+        .cell-number {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            color: #667eea;
+        }
+        
+        .clues {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .clues h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .clue-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .check-btn {
+            background: #ffc107;
+            color: #333;
+            margin-top: 20px;
+        }
+        
+        .check-btn:hover {
+            background: #e0a800;
+        }
+        
+        .correct {
+            background: #d4edda !important;
+        }
+        
+        .incorrect {
+            background: #f8d7da !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇯🇵 Japanese Crossword Puzzle Generator</h1>
+        
+        <div class="input-section">
+            <h2>Add Vocabulary Words</h2>
+            <div class="vocab-input">
+                <input type="text" id="japanese" placeholder="Japanese word (e.g., ねこ)">
+                <input type="text" id="english" placeholder="English meaning (e.g., cat)">
+                <button class="add-btn" onclick="addVocab()">Add Word</button>
+            </div>
+            
+            <div class="vocab-list" id="vocabList"></div>
+            
+            <button onclick="generatePuzzle()" style="width: 100%; margin-top: 20px;">Generate Puzzle</button>
+        </div>
+        
+        <div class="puzzle-container" id="puzzleContainer">
+            <h2>Complete the Crossword Puzzle</h2>
+            <div class="puzzle-grid" id="puzzleGrid"></div>
+            
+            <div class="clues">
+                <div>
+                    <h3>Across (→)</h3>
+                    <div id="acrossClues"></div>
+                </div>
+                <div>
+                    <h3>Down (↓)</h3>
+                    <div id="downClues"></div>
+                </div>
+            </div>
+            
+            <button class="check-btn" onclick="checkAnswers()">Check Answers</button>
+        </div>
+    </div>
+
+    <script>
+        let vocabWords = [];
+        let puzzle = [];
+        let answers = {};
+
+        function addVocab() {
+            const japanese = document.getElementById('japanese').value.trim();
+            const english = document.getElementById('english').value.trim();
+            
+            if (japanese && english) {
+                vocabWords.push({ japanese, english });
+                document.getElementById('japanese').value = '';
+                document.getElementById('english').value = '';
+                updateVocabList();
+            }
+        }
+
+        function updateVocabList() {
+            const list = document.getElementById('vocabList');
+            list.innerHTML = vocabWords.map((word, idx) => `
+                <div class="vocab-item">
+                    <span><strong>${word.japanese}</strong> - ${word.english}</span>
+                    <button class="delete-btn" onclick="deleteVocab(${idx})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteVocab(idx) {
+            vocabWords.splice(idx, 1);
+            updateVocabList();
+        }
+
+        function generatePuzzle() {
+            if (vocabWords.length < 2) {
+                alert('Please add at least 2 vocabulary words!');
+                return;
+            }
+
+            const size = Math.max(8, Math.min(15, vocabWords.length + 3));
+            puzzle = Array(size).fill(null).map(() => Array(size).fill(null));
+            answers = {};
+            
+            let clueNumber = 1;
+            let acrossClues = [];
+            let downClues = [];
+
+            vocabWords.forEach((word, idx) => {
+                const isAcross = idx % 2 === 0;
+                const chars = word.japanese.split('');
+                
+                if (isAcross) {
+                    const row = Math.floor(idx / 2) + 2;
+                    const col = 2;
+                    
+                    for (let i = 0; i < chars.length; i++) {
+                        if (col + i < size) {
+                            puzzle[row][col + i] = { char: chars[i], number: i === 0 ? clueNumber : null };
+                        }
+                    }
+                    
+                    acrossClues.push({ number: clueNumber, clue: word.english, answer: word.japanese });
+                    answers[clueNumber] = { direction: 'across', row, col, answer: word.japanese };
+                } else {
+                    const row = 2;
+                    const col = Math.floor(idx / 2) * 2 + 2;
+                    
+                    for (let i = 0; i < chars.length; i++) {
+                        if (row + i < size) {
+                            if (!puzzle[row + i][col]) {
+                                puzzle[row + i][col] = { char: chars[i], number: i === 0 ? clueNumber : null };
+                            }
+                        }
+                    }
+                    
+                    downClues.push({ number: clueNumber, clue: word.english, answer: word.japanese });
+                    answers[clueNumber] = { direction: 'down', row, col, answer: word.japanese };
+                }
+                
+                clueNumber++;
+            });
+
+            renderPuzzle(acrossClues, downClues);
+        }
+
+        function renderPuzzle(acrossClues, downClues) {
+            const grid = document.getElementById('puzzleGrid');
+            const size = puzzle.length;
+            
+            grid.style.gridTemplateColumns = `repeat(${size}, 50px)`;
+            grid.innerHTML = '';
+
+            puzzle.forEach((row, r) => {
+                row.forEach((cell, c) => {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = 'cell';
+                    
+                    if (cell) {
+                        if (cell.number) {
+                            const num = document.createElement('span');
+                            num.className = 'cell-number';
+                            num.textContent = cell.number;
+                            cellDiv.appendChild(num);
+                        }
+                        
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.maxLength = 1;
+                        input.dataset.row = r;
+                        input.dataset.col = c;
+                        input.dataset.answer = cell.char;
+                        cellDiv.appendChild(input);
+                    } else {
+                        cellDiv.classList.add('black');
+                    }
+                    
+                    grid.appendChild(cellDiv);
+                });
+            });
+
+            document.getElementById('acrossClues').innerHTML = acrossClues.map(clue => 
+                `<div class="clue-item"><strong>${clue.number}.</strong> ${clue.clue}</div>`
+            ).join('');
+
+            document.getElementById('downClues').innerHTML = downClues.map(clue => 
+                `<div class="clue-item"><strong>${clue.number}.</strong> ${clue.clue}</div>`
+            ).join('');
+
+            document.getElementById('puzzleContainer').style.display = 'block';
+        }
+
+        function checkAnswers() {
+            const inputs = document.querySelectorAll('.cell input');
+            let correct = 0;
+            let total = 0;
+
+            inputs.forEach(input => {
+                total++;
+                if (input.value === input.dataset.answer) {
+                    input.classList.add('correct');
+                    input.classList.remove('incorrect');
+                    correct++;
+                } else {
+                    input.classList.add('incorrect');
+                    input.classList.remove('correct');
+                }
+            });
+
+            alert(`You got ${correct} out of ${total} correct!`);
+        }
+    </script>
+</body>
+</html>
